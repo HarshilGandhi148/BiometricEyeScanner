@@ -15,8 +15,7 @@ def detect_eyes(image):
     global eye, timeOn, start
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize = (40, 40))
-
-    eye = not (faces == ())
+    eye = not (len(faces) == 0)
     checkThres()
     if not eye and timeOn and (time.time() - start) > 0.5:
         return False
