@@ -48,11 +48,8 @@ while True:
         timerOn = True
     
     frame = cv2.putText(frame, str(eye), (50, 50) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
-    #print(math.floor((time.time()-startTime)/60))
-    #print(math.floor(time.time()-startTime)%60)
-    #print((math.round((((time.time()-startTime)%60) - (math.floor(time.time()-startTime)%60))*100))/100)
     timeString = str(math.floor((time.time()-startTime)/60)) + ":" + str(math.floor(time.time()-startTime)%60) + ":" + str(int(round((((time.time()-startTime)%60) - (math.floor(time.time()-startTime)%60))*100)))
-    frame = cv2.putText(frame, timeString, (50, 100) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA) 
+    frame = cv2.putText(frame, timeString, (50, 100) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
     cv2.imshow("Eye Detection", frame)
 
     k = cv2.waitKey(1) & 0xFF
