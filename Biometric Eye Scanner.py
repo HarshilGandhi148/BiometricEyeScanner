@@ -18,8 +18,8 @@ video = cv2.VideoCapture(0)
 
 def detect_eyes(image):
     global eye, blinkingThresholdOn, start
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize = (40, 40))
+    grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(grayscale, 1.1, 6, minSize = (40, 40))
     eye = not (len(faces) == 0)
     checkThres()
     if not eye and blinkingThresholdOn and (time.time() - start) > 0.5:
@@ -38,7 +38,7 @@ def checkThres():
 while True:
     result, frame = video.read()
 
-    if result is False:
+    if not result:
         break
     
     eye = detect_eyes(frame)
@@ -46,10 +46,27 @@ while True:
     if not timerOn and not breakTime:
         startTime = time.time()
         timerOn = True
-    
+        
+    if ((time.time()-startTime) > 10.1) and timerOn:
+        startTime = time.time()
+        timerOn = False
+        breakTime = True
+    elif ((time.time()-startTime) > 5.1) and not timerOn and breakTime:
+        startTime = time.time()
+        timerOn = True
+        breakTime = False
+
+    if breakTime and not eye:
+        startTime = time.time()
+
     frame = cv2.putText(frame, str(eye), (50, 50) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
-    timeString = str(math.floor((time.time()-startTime)/60)) + ":" + str(math.floor(time.time()-startTime)%60) + ":" + str(int(round((((time.time()-startTime)%60) - (math.floor(time.time()-startTime)%60))*100)))
-    frame = cv2.putText(frame, timeString, (50, 100) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
+    if (not breakTime):
+        #timeString = "Work Time: " + str(math.floor((time.time()-startTime)/60)) + ":" + str(math.floor(time.time()-startTime)%60) + ":" + str(int(round((((time.time()-startTime)%60) - (math.floor(time.time()-startTime)%60))*100)))
+        timeString = "Work Time: " + str(math.floor((time.time()-startTime)/60)) + ":" + str(math.floor(time.time()-startTime)%60)
+        frame = cv2.putText(frame, timeString, (50, 100) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
+    elif breakTime:
+        timeString = "Break Time: " + str(math.floor((time.time()-startTime)/60)) + ":" + str(math.floor(time.time()-startTime)%60)
+        frame = cv2.putText(frame, timeString, (50, 100) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
     cv2.imshow("Eye Detection", frame)
 
     k = cv2.waitKey(1) & 0xFF
