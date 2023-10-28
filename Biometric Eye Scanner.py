@@ -1,6 +1,7 @@
 import cv2
 import time
 import math
+import eyetracker as et
 
 #dataset to detect eyes
 eye_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
@@ -90,7 +91,7 @@ while True:
         startTime = time.time()
 
     create_eye_box(frame)
-
+    frame = et.detectEyes(frame)
     if (not breakTime):
         '''
         Used for milliseconds (if needed):
