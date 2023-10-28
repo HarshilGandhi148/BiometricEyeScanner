@@ -2,7 +2,7 @@ import cv2
 import time
 import math
 
-face_classifier = cv2.CascadeClassifier(
+eye_classifier = cv2.CascadeClassifier(
     cv2.data.haarcascades + "haarcascade_eye.xml"
 )
 
@@ -16,20 +16,27 @@ timeString = ""
 blinkingThresholdOn = False
 eye = False
 BLINK_THRESHOLD = 0.5
-WORK_TIME = 20*60
-BREAK_TIME = 20
+WORK_TIME = 10
+BREAK_TIME = 5
 
 video = cv2.VideoCapture(0)
 
 def detect_eyes(image):
     global eye, blinkingThresholdOn, start
     grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_classifier.detectMultiScale(grayscale, 1.1, 6, minSize = (40, 40))
-    eye = not (len(faces) == 0)
+    eyes = eye_classifier.detectMultiScale(grayscale, 1.1, 6, minSize = (40, 40))
+    eye = not (len(eyes) == 0)
     checkThres()
     if not eye and blinkingThresholdOn and (time.time() - start) > BLINK_THRESHOLD:
         return False
     return True
+
+def create_eye_box(image):
+    gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    eyes = eye_classifier.detectMultiScale(gray_scale, 1.1, 6, minSize = (40, 40))
+    for (x, y, w, h) in eyes:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 4)
+    return eyes
 
 def checkThres():
     global eye, blinkingThresholdOn, start
@@ -71,8 +78,10 @@ while True:
         startTime = time.time()
     
 
-    if breakTime and not eye:
+    if breakTime and eye:
         startTime = time.time()
+
+    create_eye_box(frame)
 
     #frame = cv2.putText(frame, str(eye), (50, 50) , cv2.FONT_HERSHEY_SIMPLEX , 1,(0, 255, 0), 2, cv2.LINE_AA)
     if (not breakTime):
