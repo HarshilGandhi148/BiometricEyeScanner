@@ -2,9 +2,7 @@ import cv2
 import time
 import math
 
-eye_classifier = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_eye.xml"
-)
+eye_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
 
 breakTimer = False
 startBreak = time.time()
@@ -24,7 +22,7 @@ video = cv2.VideoCapture(0)
 def detect_eyes(image):
     global eye, blinkingThresholdOn, start
     grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    eyes = eye_classifier.detectMultiScale(grayscale, 1.1, 6, minSize = (40, 40))
+    eyes = eye_classifier.detectMultiScale(grayscale, 1.1, 7, minSize = (40, 40))
     eye = not (len(eyes) == 0)
     checkThres()
     if not eye and blinkingThresholdOn and (time.time() - start) > BLINK_THRESHOLD:
@@ -33,7 +31,7 @@ def detect_eyes(image):
 
 def create_eye_box(image):
     gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    eyes = eye_classifier.detectMultiScale(gray_scale, 1.1, 6, minSize = (40, 40))
+    eyes = eye_classifier.detectMultiScale(gray_scale, 1.1, 7, minSize = (40, 40))
     for (x, y, w, h) in eyes:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 4)
     return eyes
